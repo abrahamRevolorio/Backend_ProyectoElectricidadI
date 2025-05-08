@@ -3,6 +3,7 @@ import requests
 from models.pico import Pico
 from utils.pico_state import setPicoIp, getPicoIp
 from utils.validators import validarIp
+from utils.led_state import getLedState, setLedState
 
 app = FastAPI()
 
@@ -32,6 +33,7 @@ def ledOn():
     try:
 
         r = requests.get(f"{ip}/led/on")
+        setLedState(True)
         return {"status": "Done", "led": "on", "pico_response": r.json()}
     
     except Exception as e:
@@ -55,6 +57,7 @@ def ledOff():
     try:
 
         r = requests.get(f"{ip}/led/off")
+        setLedState(False)
         return {"status": "Done", "led": "off", "pico_response": r.json()}
     
     except Exception as e:
