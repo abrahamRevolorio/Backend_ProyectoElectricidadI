@@ -18,7 +18,7 @@ app.add_middleware(
 
 activeConnections = []
 
-@app.websocket("/ws/{idDipositivo}")
+@app.websocket("/ws/{idDispositivo}")
 async def websocket_endpoint(websocket: WebSocket, deviceId: str):
     
     await websocket.accept()
@@ -69,9 +69,9 @@ async def setPico_Ip(request: Request):
 @app.post("/led/on")
 async def ledOn():
 
-    idDipositivo = "raspi-001"
+    idsDipositivo = "raspi-001"
 
-    websocket = activeConnections.get(idDipositivo)
+    websocket = activeConnections.get(idsDipositivo)
 
     if websocket:
 
@@ -111,9 +111,9 @@ async def ledOn():
 @app.post("/led/off")
 async def ledOff():
 
-    idDipositivo = "raspi-001"
+    idsDipositivo = "raspi-001"
 
-    websocket = activeConnections.get(idDipositivo)
+    websocket = activeConnections.get(idsDipositivo)
 
     if websocket:
 
