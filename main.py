@@ -4,8 +4,18 @@ from models.pico import Pico
 from utils.pico_state import setPicoIp, getPicoIp
 from utils.validators import validarIp
 from utils.led_state import getLedState, setLedState
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.post("/configs/setPicoIp")
 async def setPico_Ip(pico: Pico):
