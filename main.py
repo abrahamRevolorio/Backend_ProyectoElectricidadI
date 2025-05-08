@@ -1,4 +1,4 @@
-from fastapi import FastAPI,  HTTPException
+from fastapi import FastAPI, Request,  HTTPException, WebSocket, WebSocketDisconnect
 import requests
 from models.pico import Pico
 from utils.pico_state import setPicoIp, getPicoIp
@@ -16,29 +16,81 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+activeConnections = []
 
-@app.post("/configs/setPicoIp")
-async def setPico_Ip(pico: Pico):
+@app.websocket("/ws/{idDipositivo}")
+async def websocket_endpoint(websocket: WebSocket, deviceId: str):
+    
+    await websocket.accept()
+
+    activeConnections[idDispositivo] = websocket
+
+    idDispositivo = websocket.cliente.host
+
+    setPicoIp(f"http://{idDispositivo}")
+
+    print(f"Raspberry Pi con IP {idDispositivo} conectado")
 
     try:
 
-        ipFormateada = validarIp(pico.ip)
+        while True:
+            await websocket.receive_text()
+
+    except WebSocketDisconnect:
+
+        print(f"Raspberry Pi con IP {idDispositivo} desconectado")
+
+        activeConnections.pop(idDispositivo, None)
+
+
+
+
+@app.post("/configs/setPicoIp")
+async def setPico_Ip(request: Request):
+
+    try:
+
+        body = await request.json()
+
+        idLocal = body.get("ip")
+
+        if not idLocal:
+
+            raise HTTPException(status_code=400, detail="Ip no proporcionada")
+        
+        ipFormateada = validarIp(idLocal)
 
         setPicoIp(ipFormateada)
 
-        return {"status": "Ip Configurada", "ip": getPicoIp()}
-
     except Exception as e:
 
-        raise HTTPException(status_code=400, detail="Cuerpo de solicitud inválido o vacío")
+        raise HTTPException(status_code=400, detail="Ip Invalida")
 
 @app.post("/led/on")
-def ledOn():
+async def ledOn():
+
+    idDipositivo = "raspi-001"
+
+    websocket = activeConnections.get(idDipositivo)
+
+    if websocket:
+
+        try:
+
+            await websocket.send_json({"command": "led_on"})
+
+            setLedState(True)
+
+            return {"status": "Led encendido via websocket"}
+        
+        except Exception as e:
+
+            raise HTTPException(status_code=400, detail="Error al encender led")
 
     ip = getPicoIp()
 
     if not ip:
-        return {"status": "Error!", "error": "Ip no configurada"}
+        return {"status": "Error!", "error": "Raspberry no conectada"}
     
     try:
 
@@ -57,12 +109,30 @@ def ledOn():
             return {"status": "Error!", "error": str(e)}
         
 @app.post("/led/off")
-def ledOff():
+async def ledOff():
+
+    idDipositivo = "raspi-001"
+
+    websocket = activeConnections.get(idDipositivo)
+
+    if websocket:
+
+        try:
+
+            await websocket.send_json({"command": "led_off"})
+
+            setLedState(False)
+
+            return {"status": "Led apagado via websocket"}
+        
+        except Exception as e:
+
+            raise HTTPException(status_code=400, detail="Error al apagar led")
 
     ip = getPicoIp()
 
     if not ip:
-        return {"status": "Error!", "error": "Ip no configurada"}
+        return {"status": "Error!", "error": "Raspberry no conectada"}
     
     try:
 
@@ -79,5 +149,4 @@ def ledOff():
         else:
 
             return {"status": "Error!", "error": str(e)}
-    
 
