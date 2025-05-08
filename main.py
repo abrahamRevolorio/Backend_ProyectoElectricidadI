@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-activeConnections = []
+activeConnections = {}
 
 @app.websocket("/ws/{idDispositivo}")
 async def websocket_endpoint(websocket: WebSocket, deviceId: str):
