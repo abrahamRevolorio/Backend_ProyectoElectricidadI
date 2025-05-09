@@ -19,17 +19,17 @@ app.add_middleware(
 activeConnections = {}
 
 @app.websocket("/ws/{idDispositivo}")
-async def websocket_endpoint(websocket: WebSocket, deviceId: str):
+async def websocket_endpoint(websocket: WebSocket, idDispositivo: str):
     
     await websocket.accept()
 
     activeConnections[idDispositivo] = websocket
 
-    idDispositivo = websocket.cliente.host
+    ipCliente = websocket.client.host
 
-    setPicoIp(f"http://{idDispositivo}")
+    setPicoIp(f"http://{ipCliente}")
 
-    print(f"Raspberry Pi con IP {idDispositivo} conectado")
+    print(f"Raspberry Pi con IP {ipCliente} conectado")
 
     try:
 
