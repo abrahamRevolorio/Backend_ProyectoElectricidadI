@@ -69,9 +69,9 @@ async def setPico_Ip(request: Request):
 @app.post("/led/on")
 async def ledOn():
 
-    idsDipositivo = "raspi-001"
+    idDispositivo = "raspi-001"
 
-    websocket = activeConnections.get(idsDipositivo)
+    websocket = activeConnections.get(idDispositivo)
 
     if websocket:
 
@@ -111,9 +111,9 @@ async def ledOn():
 @app.post("/led/off")
 async def ledOff():
 
-    idsDipositivo = "raspi-001"
+    idDispositivo = "raspi-001"
 
-    websocket = activeConnections.get(idsDipositivo)
+    websocket = activeConnections.get(idDispositivo)
 
     if websocket:
 
