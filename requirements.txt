@@ -1,5 +1,5 @@
-fastapi==0.110.0
-uvicorn==0.29.0
-pydantic==2.6.4
-requests==2.31.0
-websockets==12.0
+fastapi==0.110.0      # Framework principal del backend. Ligero y rápido.
+uvicorn==0.29.0       # Servidor ASGI. Ejecuta FastAPI.
+pydantic==2.6.4       # Validación de datos. Usa modelos seguros.
+requests==2.31.0      # Para hacer peticiones HTTP fácilmente.
+websockets==12.0      # Soporte WebSocket. Comunicación en tiempo real.
